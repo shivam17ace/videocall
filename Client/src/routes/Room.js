@@ -153,11 +153,6 @@ const Room = (props) => {
     return (
         <div className="container">
             <StyledVideo muted ref={userVideo} autoPlay playsInline />
-            {peers.map((peer, index) => {
-                return (
-                    <Video key={index} peer={peer} />
-                );
-            })}
             <div className="video_footer">
                 <div className="control_left">
                     <div className="control_button" onClick={muteUnmute}>
@@ -190,6 +185,11 @@ const Room = (props) => {
                     </div>
                 </div>
             </div>
+            {peers.map((peer, index) => {
+                return (
+                    <Video key={index} peer={peer} />
+                );
+            })}
         </div>
     );
 };

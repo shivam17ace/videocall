@@ -51,9 +51,9 @@ exports.createRoom = (req,res) => {
 }
 
 exports.joinRoom = (req,res) => {
-    let {roomId, roomPassword} = req.body;
+    let {id, roomPassword} = req.body;
     let errors = [];
-    if(!roomId){
+    if(!id){
         errors.push("Room Id Required");
     }
     if(!roomPassword){
@@ -63,7 +63,7 @@ exports.joinRoom = (req,res) => {
         return res.status(422).json({ errors: errors });
     }
 
-    User.findOne({roomId:roomId})
+    User.findOne({id:id})
     .then((user)=>{
         if(!user){
             res.status(404).json("No Such Room Found")
