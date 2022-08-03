@@ -5,6 +5,14 @@ const app = express();
 const server = http.createServer(app);
 const socket = require("socket.io");
 const io = socket(server);
+const cors = require("cors");
+const mongoose = require("mongoose");
+var bodyparser = require("body-parser");
+const Route = require("./Routes/index");
+
+app.use(bodyparser.json());
+app.use(cors());
+app.use("/",Route);
 
 const users = {};
 
@@ -46,5 +54,12 @@ io.on('connection', socket => {
     });
 
 });
+
+mongoose
+  .connect(process.env.DATABASE)
+  .then(console.log("database connected"))
+  .catch((err) => {
+    console.log(err);
+  });
 
 server.listen(process.env.PORT || 8000, () => console.log('server is running on port 8000'));
