@@ -11,7 +11,12 @@ let userSchema = new Schema(
     email: [{
             type: String,
             unique: true,
-    }]
+    }],
+
+},
+{
+    timestamps: true,
+    collection: "users",
 }
 );
 module.exports = mongoose.model("Users", userSchema);

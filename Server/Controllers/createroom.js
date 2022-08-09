@@ -30,7 +30,6 @@ exports.createRoom = (req,res) => {
                 id: id,
                 roomPassword: roomPassword,
                 email: email,
-                // otp: otp,
             })
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(roomPassword, salt, function (err, hash) {
@@ -62,7 +61,7 @@ exports.createRoom = (req,res) => {
 }
 
 exports.joinRoom = (req,res) => {
-    let {id, roomPassword, email} = req.body;
+    let {id,roomPassword,email} = req.body;
     let errors = [];
     if(!id){
         errors.push("Room Id Required");
@@ -77,7 +76,7 @@ exports.joinRoom = (req,res) => {
         return res.status(422).json({ errors: errors });
     }
 
-    User.findOne({id:id})
+    User.findOne({id : id})
     .then((user)=>{
         if(!user){
             res.status(404).json("No Such Room Found")
@@ -85,34 +84,38 @@ exports.joinRoom = (req,res) => {
         else{
             User.findOne({email:email})
             .then((res)=>{
-                if(email){
-                    bcrypt.compare(roomPassword, user.roomPassword)
-                    .then((match) => {
-                        if (!match) {
-                        return res
-                            .status(404)
-                            .json({ errors: [{ roomPassword: "Incorrect Password" }] });
-                        }
-                        User.findByIdAndUpdate(user._id)
-                        .then((user) => {
-                        res.status(200).json({
-                            data: { id: user._id },
-                        });
-                        })
-                        .catch((err) => {
-                        next(err);
-                        console.log(err);
-                        });
-                    })
+                console.log(res)
+                if(res){
+                    console.log(email)
+                    // bcrypt.compare(roomPassword, user.roomPassword)
+                    // .then((match) => {
+                    //     if (!match) {
+                    //     return res
+                    //         .status(404)
+                    //         .json({ errors: [{ roomPassword: "Incorrect Password" }] });
+                    //     }
+                    //     // User.findByIdAndUpdate(user._id)
+                    //     // .then((user) => {
+                    //     // res.status(200).json({
+                    //     //     data: { id: user._id },
+                    //     // });
+                    //     // })
+                    //     // .catch((err) => {
+                    //     // console.log(err);
+                    //     // });
+                    //     else{
+                    //         return res.status(200).json("joined")
+                    //     }
+                    // })
                 }
                 else{
-                    return res.json("Email Adress Not Allowed");
+                    console.log("wrong")
                 }
             })
-        .catch((err) => {
-          res.status(502).json({ errors: err });
-          console.log(err);
-        });
+            .catch((err) => {
+            res.status(502).json({ errors: err });
+            console.log(err);
+            });
         }
 
     })
