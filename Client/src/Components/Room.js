@@ -40,6 +40,7 @@ const Room = (props) => {
     const userVideo = useRef();
     const peersRef = useRef([]);
     const roomID = props.match.params.roomID;
+    const senders = useRef([]);
     const [mute, setMute] = useState(false);
     const [stopVideo, setStopVideo] = useState(false);
     const [shareScreen, setShareScreen] = useState(false);
@@ -57,7 +58,10 @@ const Room = (props) => {
                         peerID: userID,
                         peer,
                     })
-                    peers.push(peer);
+                    peers.push({
+                        peerID: userID,
+                        peer, 
+                    })
                 })
                 setPeers(peers);
             })
@@ -68,14 +72,29 @@ const Room = (props) => {
                     peerID: payload.callerID,
                     peer,
                 })
+               const peerObj = {
+                    peer, 
+                    peerID: payload.callerID
+                }
 
-                setPeers(users => [...users, peer]);
+                setPeers(users => [...users, peerObj]);
             });
 
             socketRef.current.on("receiving returned signal", payload => {
                 const item = peersRef.current.find(p => p.peerID === payload.id);
+                // userVideo.current.getTracks().forEach(track=>{senders.current.push(peersRef.current.addTrack(track, userVideo.current))})
                 item.peer.signal(payload.signal);
             });
+
+            socketRef.current.on("user left", id => {
+                const peerObj = peersRef.current.find(p=> p.peerID === id);
+                if(peerObj){
+                    peerObj.peer.destroy();
+                }
+                const peers = peersRef.current.filter(p=> p.peerID !== id);
+                peersRef.current = peers;
+                setPeers(peers);
+            })
         })
     }, []);
 
@@ -110,7 +129,12 @@ const Room = (props) => {
     }
 
     function displayMediaStream() {
-        navigator.mediaDevices.getDisplayMedia({ video: videoConstraints, audio: true }).then(stream => {
+        navigator.mediaDevices.getDisplayMedia({ cursor: true }).then(stream => {
+            const ScreenTrack = stream.getTracks()[0];
+            senders.current.find(sender=> sender.track.kind === 'video').replaceTrack(ScreenTrack);
+            ScreenTrack.onended = function(){
+                senders.current.find(sender => sender.track.kind === 'video').replaceTrack(userVideo.current.getTracks()[1])
+            }
             userVideo.current.srcObject = stream;
         })
     }
@@ -185,9 +209,9 @@ const Room = (props) => {
                     </div>
                 </div>
             </div>
-            {peers.map((peer, index) => {
+            {peers.map((peer) => {
                 return (
-                    <Video key={index} peer={peer} />
+                    <Video key={peer.peerID} peer={peer.peer} />
                 );
             })}
         </div>

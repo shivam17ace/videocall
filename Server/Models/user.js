@@ -7,7 +7,11 @@ let userSchema = new Schema(
     },
     roomPassword: {
         type: String,
-    }
+    },
+    email: [{
+            type: String,
+            unique: true,
+    }]
 }
 );
 module.exports = mongoose.model("Users", userSchema);
