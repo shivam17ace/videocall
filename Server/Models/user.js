@@ -8,10 +8,7 @@ let userSchema = new Schema(
     roomPassword: {
         type: String,
     },
-    email: [{
-            type: String,
-            unique: true,
-    }],
+    email: {type:Array, default: []},
 
 },
 {
