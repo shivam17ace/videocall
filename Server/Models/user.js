@@ -8,8 +8,11 @@ let userSchema = new Schema(
     roomPassword: {
         type: String,
     },
-    email: {type:Array, default: []},
-
+    email: {
+        type:Array,
+        default: [], 
+        unique: false,
+    }
 },
 {
     timestamps: true,

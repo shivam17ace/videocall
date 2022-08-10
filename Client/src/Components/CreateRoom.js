@@ -2,6 +2,8 @@ import React,{ useState, useEffect } from "react";
 import { v1 as uuid } from "uuid";
 import "./croom.scss";
 import { Button } from "reactstrap";
+import { handleJoin } from "../Services/UserService";
+import { handleCreate } from "../Services/HostService";
 const emailRegxp =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -10,45 +12,35 @@ let emailCollection = [];
 function CreateRoom(props){
     const [id, setId] = useState('');
     const [roomPassword, setRoomPassword] = useState('');
-    const [isRoomCreated, setIsRoomCreated] = useState('');
-    const [isRoomJoined, setIsRoomJoined] = useState('');
     const [email, setEmail] = useState([]);
-    // const [otp, setOtp] = useState('');
     
 
     const create = () => {
         const id = uuid();
-        let data = {id, roomPassword, email};
-        const url = "http://localhost:8000/createroom";
-        fetch(url,{
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            "Content-type": "application/json",
-            "Accept": "application/json"
-          }
-        }).then((res)=>{
-            setIsRoomCreated(true);
+        handleCreate(id,roomPassword,email)
+        .then((response) => {
+            const {errors} = response;
+            if (errors) {
+                console.log(errors)
+            } else {
+                props.history.push(`/room/${id}`);
+            }
         })
-        isRoomCreated ? props.history.push(`/room/${id}`) : props.history.push("/")
     }
 
-    const handleJoin = () => {
-        let data = {id, roomPassword};
-        const url = "http://localhost:8000/joinroom";
-        fetch(url,{
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            "Content-type": "application/json",
-            "Accept": "application/json"
-          }
-        }).then((response)=>{
-            // setIsRoomJoined((prevState=>({isRoomJoined : !prevState})))
-            setIsRoomJoined(true);
+    const handleJoinButton = () =>{
+        handleJoin(id,roomPassword,email)
+        .then((response) => {
+            const {errors} = response;
+            if (errors) {
+                console.log(errors)
+            } else {
+                props.history.push(`/room/${id}`);
+            }
         })
-        
-        isRoomJoined ? props.history.push(`/room/${id}`) : props.history.push("/")
+        .catch((err)=>{
+            console.log(err)
+        })
     }
 
     const handleInputId = (e) => {
@@ -126,7 +118,7 @@ function CreateRoom(props){
                     <input type="text" placeholder="enter RoomId" value={id} onChange={handleInputId} className="input_join_room" />
                     <input type="password" placeholder="enter RoomPassword" value={roomPassword} onChange={handleInputPassword} className="input_join_room"/>
                     <input type="email" placeholder="enter MailId" value={email} onChange={handleInputEmail} className="input_join_room"/> 
-                    <Button onClick={handleJoin} className="join_room_button"> Join Room</Button>
+                    <Button onClick={handleJoinButton} className="join_room_button"> Join Room</Button>
                 </div>
             </div>
         </div>
