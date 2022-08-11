@@ -7,13 +7,11 @@ import { handleCreate } from "../Services/HostService";
 const emailRegxp =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-let emailCollection = [];
-
 function CreateRoom(props){
     const [id, setId] = useState('');
     const [roomPassword, setRoomPassword] = useState('');
     const [email, setEmail] = useState([]);
-    
+    const [emailChip, setEmailChip] = useState({email:[],value:""})
 
     const create = () => {
         const id = uuid();
@@ -55,34 +53,32 @@ function CreateRoom(props){
         setRoomPassword(e.target.value);
     }
 
-    const handleInputEmail = (e) => {
-        setEmail(e.target.value);
-    }
-
     const handleKeyDown = (evt) => {
         if(["Enter", "Tab", ","].includes(evt.key)) {
             evt.preventDefault();
-            emailCollection.push(evt.target.value)
-            setEmail(emailCollection)
-            console.log(email)
-            // emailCollection.push(email);
-            // setEmail(emailCollection);
-            // console.log(emailCollection)
-            setEmail('')
+            let value = emailChip.value.trim();
+            if(value.length)
+            {
+                setEmailChip({
+                email: [...emailChip.email, emailChip.value],
+                value: ''
+                })
+                console.log(emailChip)
+            }
         }
     }
 
-    const handlePaste = (evt) => {
-        handlePaste = evt => {
-        evt.preventDefault();
-        var paste = evt.clipboardData.getData("text");
-        setEmail(paste)
-        }
+    const handleInputEmail = (e) => {
+        setEmail([e.target.value]);
+    }
+
+    const handleInputEmail_create = (e) => {
+        setEmailChip({value: e.target.value})
     }
 
     const handleDelete = (item) => {
-        emailCollection = emailCollection.filter(index => index!== item);
-        console.log(emailCollection)
+        email = email.filter(index => index!== item);
+        console.log(email)
     }
 
 
@@ -92,7 +88,7 @@ function CreateRoom(props){
                 <div className="create_room">
                     <input type="password" placeholder="Create Room RoomPassword" value={roomPassword} onChange={handleInputPassword_create} className="input_create_Room"/> 
                     <div className="input_email_create_room">
-                        {/* {emailCollection.map((item,index) => (
+                        {/* {emailChip[email]?.map((item,index) => (
                             <div key={index}>
                                 {item}
                                 <button
@@ -102,14 +98,14 @@ function CreateRoom(props){
                                 >x
                                 </button>
                             </div>
-                            ))} */}
+                            ))}
+                            {console.log(emailChip)} */}
                         <input
                             className="input_create_Room"
-                            value={email}
+                            value={emailChip.value}
                             placeholder="Type or paste email addresses and press `Enter`..."
                             onKeyDown={handleKeyDown}
-                            onChange={handleInputEmail}
-                            onPaste={handlePaste}
+                            onChange={handleInputEmail_create}
                         />
                     </div>
                     <Button onClick={create} className="create_room_button">Create room</Button>
