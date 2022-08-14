@@ -1,11 +1,9 @@
-import React,{ useState, useEffect } from "react";
+import React,{ useState } from "react";
 import { v1 as uuid } from "uuid";
 import "./croom.scss";
 import { Button } from "reactstrap";
 import { handleJoin } from "../Services/UserService";
 import { handleCreate } from "../Services/HostService";
-const emailRegxp =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 function CreateRoom(props){
     const [id, setId] = useState('');
@@ -64,6 +62,7 @@ function CreateRoom(props){
                 value: ''
                 })
                 console.log(emailChip)
+                //Logic need to be implemented                                                                                       e completed.
             }
         }
     }
@@ -74,11 +73,12 @@ function CreateRoom(props){
 
     const handleInputEmail_create = (e) => {
         setEmailChip({value: e.target.value})
+        console.log(emailChip.value)
     }
 
     const handleDelete = (item) => {
-        email = email.filter(index => index!== item);
-        console.log(email)
+        // email = email.filter(index => index!== item);
+        // console.log(email)
     }
 
 
